@@ -1,0 +1,43 @@
+stages:
+  - prepare
+  - package
+  - run
+
+variables:
+  HOME: $CI_BUILDS_DIR
+  ENVIRONMENT: per
+
+install_dependencies:
+  stage: prepare
+  image: <node_image>
+  before_script:
+    - yarn config set cache-folder .cache/yarn
+  script:
+    - yarn install --frozen-lockfile --prefer-offline
+    paths:
+      - node_modules
+    policy: pull-push
+
+package_load_scripts:
+  stage: package
+  image: <node_image>
+  script:
+    - yarn build
+    paths:
+      - node_modules
+    policy: pull
+  artifacts:
+    paths:
+      - dist/*.js
+
+run_load:
+  stage: run
+  image: <k6_executor>
+    variables:
+    K6_PROMETHEUS_RW_SERVER_URL: <url>
+    K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM: "true"
+    K6_PROMETHEUS_RW_PUSH_INTERVAL: 2s
+  script:
+    - k6 run --insecure-skip-tls-verify --tag testid=${CI_JOB_ID}_login --tag type=ms --tag environment=$ENVIRONMENT -o xk6-prometheus-rw dist/load.js
+  timeout: 15h
+  when: manual
