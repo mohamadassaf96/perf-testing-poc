@@ -16,3 +16,13 @@ export function login(username: string, password: string) {
         return JSON.parse(response?.body.toString());
     }
 }
+
+export function signOut(token: string) {
+    group('Logout user', () => {
+        let response = idp.post(`/api/signOut`, null, 'signOut', token);
+        check(response, {
+            'signOut response is success': (r) => r.status === 200,
+        });
+        return response;
+    });
+}

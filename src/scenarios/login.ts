@@ -1,4 +1,4 @@
-import { login } from "../actions/login";
+import { login, signOut } from "../actions/login";
 
 import exec from 'k6/execution';
 import { sleep } from "k6";
@@ -10,6 +10,7 @@ export function accessHomePageExec() {
   const index = (exec.vu.idInTest - 1);
   const user = globalThis.users[index];
   const response = login(user.username, user.password);
+  signOut(response.accessToken);
   sleep(waitTimeAfterLogin);
   sleep(waitTimeAfterVu);
 }
