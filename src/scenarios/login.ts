@@ -27,8 +27,9 @@ export function accessHomePage(type: 'load' | 'stress' | 'endurance' | 'smoke', 
         startVUs: 0,
         gracefulRampDown: '600s',
         stages: [
-          { duration: '15m', target: 2435 },
-          { duration: '50m', target: 2435 }
+          { duration: '1m', target: 20 },
+          { duration: '3m', target: 20 },
+          { duration: '1m', target: 0 }
         ],
         exec,
       }
